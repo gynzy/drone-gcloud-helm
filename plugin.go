@@ -47,7 +47,6 @@ const (
 	pushPkg   = "push"
 	pullPkg   = "pull"
 	deployPkg = "deploy"
-	rollbackDeploy = "rollback"
 )
 
 var reVersions = regexp.MustCompile(`(?P<realm>Client|Server): &version.Version.SemVer:"(?P<semver>.*?)".*?GitCommit:"(?P<commit>.*?)".*?GitTreeState:"(?P<treestate>.*?)"`)
@@ -86,10 +85,6 @@ func (p Plugin) Exec() error {
 			}
 		case deployPkg:
 			if err := p.deployPackage(); err != nil {
-				return err
-			}
-		case rollbackDeploy:
-			if err := p.rollbackDeploy(); err != nil {
 				return err
 			}
 		default:
@@ -189,35 +184,6 @@ func (p Plugin) deployPackage() error {
 		strings.Join(p.Values, ","),
 		doRecreate,
 		p.Namespace,
-	)
-
-	if p.Wait {
-		helmcmd = fmt.Sprintf("%s --wait --timeout %d", helmcmd, p.WaitTimeout)
-	}
-
-	cmd := exec.Command("/bin/sh", "-c", helmcmd)
-	cmd.Env = os.Environ()
-	if p.Debug {
-		trace(cmd)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-	}
-	return cmd.Run()
-}
-
-// helm rollback $RELEASE
-func (p Plugin) rollbackDeploy() error {
-	if p.Debug {
-		if err := p.kubeConfig(); err != nil {
-			return err
-		}
-	}
-
-	p.Values = append(p.Values, fmt.Sprintf("namespace=%s", p.Namespace))
-
-	helmcmd := fmt.Sprintf("%s rollback %s",
-		helmBin,
-		p.Release,
 	)
 
 	if p.Wait {
