@@ -93,7 +93,7 @@ func (p Plugin) Exec() error {
 				return err
 			}
 		default:
-			return errors.New("unknown action")
+			return errors.New("unknown action: " + a)
 		}
 	}
 
