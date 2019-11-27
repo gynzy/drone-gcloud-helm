@@ -47,6 +47,7 @@ const (
 	pushPkg   = "push"
 	pullPkg   = "pull"
 	deployPkg = "deploy"
+	deletePkg = "delete"
 )
 
 var reVersions = regexp.MustCompile(`(?P<realm>Client|Server): &version.Version.SemVer:"(?P<semver>.*?)".*?GitCommit:"(?P<commit>.*?)".*?GitTreeState:"(?P<treestate>.*?)"`)
@@ -85,6 +86,10 @@ func (p Plugin) Exec() error {
 			}
 		case deployPkg:
 			if err := p.deployPackage(); err != nil {
+				return err
+			}
+		case deletePkg:
+			if err := p.deletePackage(); err != nil {
 				return err
 			}
 		default:
@@ -192,6 +197,20 @@ func (p Plugin) deployPackage() error {
 
 	cmd := exec.Command("/bin/sh", "-c", helmcmd)
 	cmd.Env = os.Environ()
+	if p.Debug {
+		trace(cmd)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
+	return cmd.Run()
+}
+
+// helm delete $RELEASE
+func (p Plugin) deletePackage() error {
+	if !strings.Contains(p.Release, "-pr-") {
+		return errors.New("I will only delete pr releases")
+	}
+	cmd := exec.Command(helmBin, "delete", p.Release)
 	if p.Debug {
 		trace(cmd)
 		cmd.Stdout = os.Stdout
