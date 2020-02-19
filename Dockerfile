@@ -1,6 +1,6 @@
 FROM alpine:3.10
 
-ENV GCLOUD_VERSION=282.0.0
+ENV GCLOUD_VERSION=281.0.0
 ENV HELM_VERSION=v2.6.1
 
 RUN apk --update --no-cache add python tar openssl wget ca-certificates
