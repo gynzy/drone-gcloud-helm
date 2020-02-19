@@ -10,7 +10,7 @@ RUN mkdir -p /opt && cd /opt && \
 	tar -xvf google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz && \
 	google-cloud-sdk/install.sh --usage-reporting=true --path-update=true && \
 	rm -f google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz && \
-	gcloud components install kubectl
+	/opt/google-cloud-sdk/bin/gcloud components install kubectl
 
 RUN mkdir -p /tmp/gcloud && \
 	wget -q https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz && \
