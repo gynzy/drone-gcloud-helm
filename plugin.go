@@ -339,7 +339,7 @@ func (p Plugin) helmInit() error {
 			cmd = exec.Command(helmBin, "init", "--upgrade")
 			break
 		default: // client and tiller are at the same version
-			cmd = exec.Command(helmBin, "init", "--client-only")
+			cmd = exec.Command(helmBin, "init", "--client-only", "--stable-repo-url", "https://charts.helm.sh/stable")
 			break
 		}
 	}
