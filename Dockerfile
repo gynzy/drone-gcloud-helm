@@ -5,7 +5,7 @@ ENV KUBECTL_VERSION=v1.5.2
 ENV HELM_VERSION=v2.15.2
 
 
-RUN apk --update --no-cache add python tar openssl wget ca-certificates
+RUN apk --update --no-cache add python tar openssl wget ca-certificates go
 
 RUN mkdir -p /opt && cd /opt && \
 	wget -q https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz && \
