@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -29,12 +30,20 @@ func main() {
 	if p.Debug {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
+
 	if err := preparePlugin(&p); err != nil {
-		logrus.WithError(err).Fatal("failed to prepare plugin")
+		logrus.Warn("Prepare plugin failed. Waiting 10 seconds and retrying!")
+		time.Sleep(10 * time.Second) // wait and retry
+		if err := preparePlugin(&p); err != nil {
+			logrus.WithError(err).Fatal("failed to prepare plugin")
+		}
 	}
 
 	if err := p.Exec(); err != nil {
-		logrus.WithError(err).Fatal("failed to execute plugin")
+		logrus.Warn("Plugin execution failed. Waiting 10 seconds and retrying!")
+		if err := p.Exec(); err != nil {
+			logrus.WithError(err).Fatal("failed to execute plugin")
+		}
 	}
 }
 
